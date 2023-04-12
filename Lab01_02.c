@@ -2,8 +2,6 @@
 #include <pthread.h>
 
 //global
-int threadNumber = 2;
-
 int arrayLimit = 10000;
 long bigArray [10000]; 
 
