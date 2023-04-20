@@ -2,22 +2,17 @@
 #include <pthread.h>
 
 //global
-int threadNumber = 2;
-
 int arrayLimit = 10000;
-long bigArray [10000]; 
+long bigArray [10000];
+int nThreads = 2; 
 
 void *doubleNumbers(void *thread_id)
-{  
-    long position = (long) thread_id;
-    if(position % 2 == 0)
+{     
+    for(long i = (long) thread_id; i < arrayLimit; i += nThreads)
     {
-        bigArray[position] = bigArray[position] * 2;        
-    }else
-    {
-        bigArray[position] = bigArray[position] * 2;        
-    }
-
+      bigArray[i] = bigArray[i] * 2;
+      //printf("thread %ld posArray %ld valor %ld\n", (long) thread_id, i, bigArray[i]);
+    }    
     pthread_exit(NULL);    
 }
 
@@ -37,29 +32,34 @@ void fillArray()
   {
     bigArray[i] = i;
   }
-
 }
 
 int main()
 {
-  pthread_t thread1,thread2;
+  pthread_t threadsArray[nThreads];
   int verifyArray;
 
   fillArray();
 
-  //thread 1  
-  for (long i = 0; i < arrayLimit; i += 2) {
-    pthread_create(&thread1, NULL, doubleNumbers , (void *) i);
-  }
-  //thread 2  
-  for (long i = 1; i < arrayLimit; i += 2) {
-    pthread_create(&thread2, NULL, doubleNumbers , (void *) i);
-  }  
+  //threads  
+  for (long i = 0; i < nThreads; i++)
+  {    
+    if(pthread_create(&threadsArray[i], NULL, doubleNumbers , (void *) i))
+    {
+      printf("thread %ld fail", i); return 2;   
+    }
+      
+  }    
   
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
-
+  for(int i = 0; i < nThreads; i++){
+    if(pthread_join(threadsArray[i], NULL)) printf("pthread_join error"); return 3;
+  }
+  
   verifyArray = testIfAllNumbersAreDividedByTwo();
+
+ /*  for(int i = 0; i < arrayLimit; i++){
+    printf("Posicao %d e valor %d \n", i, bigArray[i]);
+  } */
 
   printf("\n\n");
   printf("Should be zero: %d \n", verifyArray); 
