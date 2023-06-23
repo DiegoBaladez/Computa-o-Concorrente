@@ -2,9 +2,10 @@
 
 from threading import Thread
 import math
+import time
 
 #global - numero para aproximação das threads
-N = 1000000
+N = 10000000
 
 #classe da thread
 class CalculaPI(Thread): #cria o objeto compartilhado entre as threads. que nem no java
@@ -31,6 +32,8 @@ if __name__ == '__main__':
 
     threads = [CalculaPI(tid) for tid in range(THREADS)]
 
+    start = time.time()
+
     for thread in threads:
         thread.start()
 
@@ -42,5 +45,6 @@ if __name__ == '__main__':
 
     print(f"Valor encontrado: {4 * pi_est:.8f}")
     print(f"Referencia para o PI: {math.pi:.8f}")
+    print(f"Tempo: {time.time() - start}")
 
     calculaSeEstaCerto(pi_est)
